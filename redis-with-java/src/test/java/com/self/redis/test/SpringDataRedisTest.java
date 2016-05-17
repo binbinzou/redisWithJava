@@ -208,4 +208,9 @@ public class SpringDataRedisTest {
 		System.out.println(redisService.hlen("user.hmset"));
 	}
 	
+	@Test
+	public void hincrby(){
+		IRedisService redisService = (IRedisService) ac.getBean("redisService");
+		System.out.println(redisService.hincrby("user.hmset","age",2));
+	}
 }

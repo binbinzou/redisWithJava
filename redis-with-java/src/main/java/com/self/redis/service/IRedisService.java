@@ -69,6 +69,6 @@ public interface IRedisService {
 	
 	Long hlen(final String hName);
 	
-	
+	Long hincrby(final String hName , final String key, final long count);
 	
 }

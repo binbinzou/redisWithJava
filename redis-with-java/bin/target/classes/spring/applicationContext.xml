@@ -25,7 +25,7 @@
         <property name="connectionFactory"   ref="connectionFactory" />  
     </bean>         
       
-    <bean id="redisService" class="com.self.redis.service.RedisServiceImpl" >
+    <bean id="userService" class="com.self.redis.service.UserServiceImpl" >
     <property name="redisTemplate" ref="redisTemplate"></property>  
     </bean>   
     

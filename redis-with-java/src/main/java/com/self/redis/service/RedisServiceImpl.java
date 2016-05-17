@@ -469,6 +469,17 @@ public class RedisServiceImpl implements IRedisService {
 		});
 	}
 
+	public Long hincrby(final String hName,final String key,final long count) {
+		return redisTemplate.execute(new RedisCallback<Long>() {
+
+			public Long doInRedis(RedisConnection connection)
+					throws DataAccessException {
+				Long long1 = connection.hIncrBy(redisTemplate.getStringSerializer().serialize(hName),redisTemplate.getStringSerializer().serialize(key),count);
+				return long1;
+			}
+		});
+	
+	}
 
 	
 }
