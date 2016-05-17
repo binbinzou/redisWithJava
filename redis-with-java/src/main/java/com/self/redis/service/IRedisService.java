@@ -71,4 +71,12 @@ public interface IRedisService {
 	
 	Long hincrby(final String hName , final String key, final long count);
 	
+	List<Object> multiOrder();
+	
+	String watchOrder();
+	
+	Boolean expires(final String name,final long timer);
+	
+	Long ttl(final String name);
+	
 }

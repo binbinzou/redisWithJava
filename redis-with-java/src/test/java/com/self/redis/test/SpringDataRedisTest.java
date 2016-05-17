@@ -18,6 +18,15 @@ import com.self.redis.service.RedisServiceImpl;
 public class SpringDataRedisTest {
 
 	private static ApplicationContext ac =  new ClassPathXmlApplicationContext("classpath:spring/applicationContext.xml");
+
+	public IRedisService redisService ; 
+
+	
+	public SpringDataRedisTest() {
+		super();
+		this.redisService = (IRedisService) ac.getBean("redisService");
+	}
+	
 	@Test
 	public void saveUser(){
 		IRedisService redisService = (IRedisService) ac.getBean("redisService");
@@ -76,7 +85,7 @@ public class SpringDataRedisTest {
 	@Test
 	public void zadd(){
 		IRedisService redisService = (IRedisService) ac.getBean("redisService");
-		redisService.zadd("user.zset1", 80, "zbb2");
+		redisService.zadd("user.zset", 80, "zbb2");
 	}
 	@Test
 	public void zrem(){
@@ -212,5 +221,24 @@ public class SpringDataRedisTest {
 	public void hincrby(){
 		IRedisService redisService = (IRedisService) ac.getBean("redisService");
 		System.out.println(redisService.hincrby("user.hmset","age",2));
+	}
+	@Test
+	public void multiOrder(){
+		List<Object> list = redisService.multiOrder();
+		for(Object o : list){
+			System.out.println(o.toString());
+		}
+	}
+	@Test
+	public void watchOrder(){
+		System.out.println(redisService.watchOrder());
+	}
+	@Test
+	public void expires(){
+		System.out.println(redisService.expires("user.zset1",10));
+	}
+	@Test
+	public void ttl(){
+		System.out.println(redisService.ttl("user.zset1"));
 	}
 }

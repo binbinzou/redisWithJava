@@ -481,5 +481,56 @@ public class RedisServiceImpl implements IRedisService {
 	
 	}
 
+	public List<Object> multiOrder() {
+		return redisTemplate.execute(new RedisCallback<List<Object>>() {
+
+			public List<Object> doInRedis(RedisConnection connection)
+					throws DataAccessException {
+				connection.multi();
+				connection.lPush(redisTemplate.getStringSerializer().serialize("list.multi"), redisTemplate.getStringSerializer().serialize("zbb"));
+				connection.lPush(redisTemplate.getStringSerializer().serialize("list.multi"), redisTemplate.getStringSerializer().serialize("zs"));
+				List<Object> long1 = connection.exec();
+				return long1;
+			}
+		});
+	}
+
+	public String watchOrder() {
+		return redisTemplate.execute(new RedisCallback<String>() {
+
+			public String doInRedis(RedisConnection connection)
+					throws DataAccessException {
+				connection.set(redisTemplate.getStringSerializer().serialize("watch.key"), redisTemplate.getStringSerializer().serialize("zb"));
+				connection.watch(redisTemplate.getStringSerializer().serialize("watch.key"));
+				connection.set(redisTemplate.getStringSerializer().serialize("watch.key"), redisTemplate.getStringSerializer().serialize("zs"));
+				connection.multi();
+				connection.set(redisTemplate.getStringSerializer().serialize("watch.key"), redisTemplate.getStringSerializer().serialize("ls"));
+				connection.exec();
+				byte[] bs = connection.get(redisTemplate.getStringSerializer().serialize("watch.key"));
+				return redisTemplate.getStringSerializer().deserialize(bs);
+			}
+		});
+	}
+
+	public Boolean expires(final String name,final long timer) {
+		return redisTemplate.execute(new RedisCallback<Boolean>() {
+			public Boolean doInRedis(RedisConnection connection)
+					throws DataAccessException {
+				Boolean boolean1 = connection.expire(redisTemplate.getStringSerializer().serialize("watch.key"),timer);
+				return boolean1;
+			}
+		});
+	}
+
+	public Long ttl(String name) {
+		return redisTemplate.execute(new RedisCallback<Long>() {
+			public Long doInRedis(RedisConnection connection)
+					throws DataAccessException {
+				Long timer = connection.ttl(redisTemplate.getStringSerializer().serialize("watch.key"));
+				return timer;
+			}
+		});
+	}
+	
 	
 }
