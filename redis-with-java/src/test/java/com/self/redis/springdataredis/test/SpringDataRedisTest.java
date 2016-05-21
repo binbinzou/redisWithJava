@@ -17,7 +17,7 @@ import com.self.redis.springdataredis.service.RedisServiceImpl;
 
 public class SpringDataRedisTest {
 
-	private static ApplicationContext ac =  new ClassPathXmlApplicationContext("classpath:spring/applicationContext.xml");
+	private static ApplicationContext ac =  new ClassPathXmlApplicationContext("classpath:spring/applicationContext_springDataRedis.xml");
 
 	public IRedisService redisService ; 
 
