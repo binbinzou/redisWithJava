@@ -1,4 +1,4 @@
-package com.self.redis.service;
+package com.self.redis.springdataredis.service;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisZSetCommands.Tuple;
 import org.springframework.data.redis.core.RedisCallback;
@@ -22,7 +23,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.self.redis.domain.TUser;
+import com.self.redis.springdataredis.domain.TUser;
+import com.self.redis.springdataredis.listener.SubscribeMessageListener;
 
 public class RedisServiceImpl implements IRedisService {
 
@@ -531,6 +533,87 @@ public class RedisServiceImpl implements IRedisService {
 			}
 		});
 	}
-	
+
+	public List<String> bLpop(final String name) {
+		return redisTemplate.execute(new RedisCallback<List<String>>() {
+			public List<String> doInRedis(RedisConnection connection)
+					throws DataAccessException {
+				List<byte[]> bs = connection.bLPop(10, redisTemplate.getStringSerializer().serialize(name));
+				List<String> strings = new ArrayList<String>();
+				for(byte[] bs2 : bs){
+					strings.add(redisTemplate.getStringSerializer().deserialize(bs2));
+				}
+				return strings;
+			}
+		});
+	}
+
+	public Long lPushLists(final String listName,final String... value) {
+		return redisTemplate.execute(new RedisCallback<Long>() {
+
+			public Long doInRedis(RedisConnection connection)
+					throws DataAccessException {
+				byte[][] bs = new byte[value.length][] ;
+				int index = 0;
+				for(String s : value){
+					try {
+						bs[index] = s.getBytes("UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					index++;
+				}
+				Long list = connection.lPush(redisTemplate.getStringSerializer().serialize(listName),bs);
+				return list;
+			}
+		});
+	}
+
+	public void subscribe(final String... listName) {
+		redisTemplate.execute(new RedisCallback<Object>() {
+			public Object doInRedis(RedisConnection connection)
+					throws DataAccessException {
+				byte[][] bs = new byte[listName.length][] ;
+				int index = 0;
+				for(String s : listName){
+					try {
+						bs[index] = s.getBytes("UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					index++;
+				}
+				SubscribeMessageListener subscribeMessageListener = new SubscribeMessageListener();
+				connection.subscribe(subscribeMessageListener, bs);
+				return null;
+			}
+		});
+	}
+
+	public Long publist(final String listName,final String value) {
+		return redisTemplate.execute(new RedisCallback<Long>() {
+
+			public Long doInRedis(RedisConnection connection)
+					throws DataAccessException {
+				Long list = connection.publish(redisTemplate.getStringSerializer().serialize(listName),redisTemplate.getStringSerializer().serialize(value));
+				return list;
+			}
+		});
+	}
+
+	public void pipelining() {
+		redisTemplate.execute(new RedisCallback<Object>() {
+			public Object doInRedis(RedisConnection connection)
+					throws DataAccessException {
+				connection.openPipeline();
+				connection.incr(redisTemplate.getStringSerializer().serialize("incr.test"));
+				connection.incr(redisTemplate.getStringSerializer().serialize("incr.test"));
+				return connection.closePipeline();
+			}
+		});
+	}
+
 	
 }

@@ -1,11 +1,11 @@
-package com.self.redis.service;
+package com.self.redis.springdataredis.service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.self.redis.domain.TUser;
+import com.self.redis.springdataredis.domain.TUser;
 
 public interface IRedisService {
 
@@ -78,5 +78,15 @@ public interface IRedisService {
 	Boolean expires(final String name,final long timer);
 	
 	Long ttl(final String name);
+	
+	List<String> bLpop(final String name);
+	
+	Long lPushLists(final String listName,final String... value);
+
+	void subscribe(final String... listName);
+	
+	Long publist(final String listName,final String value);
+	
+	void pipelining();
 	
 }

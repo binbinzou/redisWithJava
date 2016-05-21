@@ -1,4 +1,4 @@
-package com.self.redis.domain;
+package com.self.redis.springdataredis.domain;
 
 public class TUser {
 

@@ -1,4 +1,4 @@
-package com.self.redis.test;
+package com.self.redis.springdataredis.test;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.self.redis.domain.TUser;
-import com.self.redis.service.IRedisService;
-import com.self.redis.service.RedisServiceImpl;
+import com.self.redis.springdataredis.domain.TUser;
+import com.self.redis.springdataredis.service.IRedisService;
+import com.self.redis.springdataredis.service.RedisServiceImpl;
 
 public class SpringDataRedisTest {
 
@@ -50,7 +50,7 @@ public class SpringDataRedisTest {
 	@Test
 	public void lpushList(){
 		IRedisService redisService = (IRedisService) ac.getBean("redisService");
-		redisService.lPushList("user.list", "zbb1");
+		redisService.lPushList("list.blpop", "zbb1");
 	}
 	@Test
 	public void rpushList(){
@@ -241,4 +241,39 @@ public class SpringDataRedisTest {
 	public void ttl(){
 		System.out.println(redisService.ttl("user.zset1"));
 	}
+	
+	@Test
+	public void blpop(){
+		List<String> list = redisService.bLpop("list.blpop");
+		for(String s : list){
+			System.out.println(s);
+		}
+	}
+	
+	@Test
+	public void lpushLists(){
+		String s[]  = {"zs","ls","ww"};
+		IRedisService redisService = (IRedisService) ac.getBean("redisService");
+		redisService.lPushLists("list.subscribe", s);
+	}
+	
+	@Test
+	public void subscribe(){
+		String s[]  = {"list.subscribe1","list.subscribe2","list.subscribe3"};
+		IRedisService redisService = (IRedisService) ac.getBean("redisService");
+		redisService.subscribe(s);
+	}
+	
+	@Test
+	public void publist(){
+		IRedisService redisService = (IRedisService) ac.getBean("redisService");
+		System.out.println(redisService.lPushLists("list.subscribe1", "see you angin"));
+	}
+	
+	@Test
+	public void pipelining(){
+		IRedisService redisService = (IRedisService) ac.getBean("redisService");
+		redisService.pipelining();
+	}
+	
 }
