@@ -1,4 +1,4 @@
-package com.self.redis.jedis.service;
+package com.self.redis.jedis.datasource;
 
 import redis.clients.jedis.ShardedJedis;
 
